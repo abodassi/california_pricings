@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California House Price Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            padding-bottom: 40px;
+        }
+        
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .app-header h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        
+        .app-body {
+            padding: 30px;
+        }
+        
+        .info-box {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .form-control, .form-select {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        
+        .btn-predict {
+            background-color: var(--secondary-color);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-predict:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .prediction-result {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+        }
+        
+        .history-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .history-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-time {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .history-price {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .form-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-section h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f1f1;
+        }
+        
+        .feature-group {
+            margin-bottom: 20px;
+        }
+        
+        .custom-checkbox {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer i {
+            color: var(--accent-color);
+        }
+        
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 20px;
+            }
+            
+            .app-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .app-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="app-container">
+            <div class="app-header">
+                <h1><i class="fas fa-home"></i> California House Price Predictor</h1>
+            </div>
+            
+            <div class="app-body">
+                <div class="info-box">
+                    <p class="mb-2"><i class="fas fa-info-circle"></i> This application predicts the <strong>median house value</strong> in California based on housing data.</p>
+                    <p class="mb-1"><strong>Note:</strong></p>
+                    <ul class="mb-0">
+                        <li><code>Median Income</code> is scaled: <strong>1 unit = $1,000</strong>. So enter <code>4.5</code> for $4,500.</li>
+                        <li>Inputs should be within realistic California housing ranges.</li>
+                    </ul>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-sliders-h"></i> Enter Housing Features</h3>
+                    
+                    <form method="POST" action="/">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="feature-group">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="number" class="form-control" id="longitude" name="longitude" 
+                                           min="-125.0" max="-113.0" step="0.01" value="-118.0" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="housing_median_age" class="form-label">Median Age of House</label>
+                                    <input type="number" class="form-control" id="housing_median_age" name="housing_median_age" 
+                                           min="1" max="100" value="30" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="total_rooms" class="form-label">Total Rooms</label>
+                                    <input type="number" class="form-control" id="total_rooms" name="total_rooms" 
+                                           min="1" max="10000" value="5000" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="population" class="form-label">Population in Area</label>
+                                    <input type="number" class="form-control" id="population" name="population" 
+                                           min="1" max="50000" value="1500" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label class="form-label">Is it INLAND?</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ocean_proximity_inland" id="inland_yes" value="1" checked>
+                                        <label class="form-check-label" for="inland_yes">Yes</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ocean_proximity_inland" id="inland_no" value="0">
+                                        <label class="form-check-label" for="inland_no">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="feature-group">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="number" class="form-control" id="latitude" name="latitude" 
+                                           min="32.0" max="42.0" step="0.01" value="34.2" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="total_bedrooms" class="form-label">Total Bedrooms</label>
+                                    <input type="number" class="form-control" id="total_bedrooms" name="total_bedrooms" 
+                                           min="1" max="5000" value="1000" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="households" class="form-label">Number of Households</label>
+                                    <input type="number" class="form-control" id="households" name="households" 
+                                           min="1" max="10000" value="500" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="median_income" class="form-label">Median Income (1 = $1,000)</label>
+                                    <input type="number" class="form-control" id="median_income" name="median_income" 
+                                           min="0.0" max="20.0" step="0.1" value="4.5" required>
+                                </div>
+                                
+                                <div class="feature-group">
+                                    <label for="rooms_per_household" class="form-label">Rooms per Household</label>
+                                    <input type="number" class="form-control" id="rooms_per_household" name="rooms_per_household" 
+                                           min="0.0" max="50.0" step="0.1" value="10.0" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="custom-checkbox">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ocean_proximity_near_bay" name="ocean_proximity_near_bay">
+                                        <label class="form-check-label" for="ocean_proximity_near_bay">
+                                            <i class="fas fa-water text-primary me-2"></i> Is it NEAR BAY?
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="custom-checkbox">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="ocean_proximity_near_ocean" name="ocean_proximity_near_ocean">
+                                        <label class="form-check-label" for="ocean_proximity_near_ocean">
+                                            <i class="fas fa-umbrella-beach text-info me-2"></i> Is it NEAR OCEAN?
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-predict">
+                                <i class="fas fa-calculator me-2"></i>Predict House Price
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                {% if prediction_result %}
+                <div class="prediction-result">
+                    <i class="fas fa-tag me-2"></i> Estimated House Price: {{ prediction_result }}
+                </div>
+                {% endif %}
+                
+                {% if history %}
+                <div class="history-section">
+                    <h3><i class="fas fa-history"></i> Prediction History</h3>
+                    <div class="list-group">
+                        {% for item in history|reverse %}
+                        <div class="history-item">
+                            <span class="history-time"><i class="far fa-clock me-1"></i>{{ item.time }}</span>
+                            <span class="history-price">${{ "{:,.2f}".format(item.price) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="footer">
+                    Developed with <i class="fas fa-heart"></i> by abdelrahman abuassi | Powered by XGBoost & Flask
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight input fields on focus
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transition = 'all 0.3s';
+                    this.parentElement.style.transform = 'translateY(-2px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Add hover effect to prediction button
+            const predictBtn = document.querySelector('.btn-predict');
+            if (predictBtn) {
+                predictBtn.addEventListener('mouseover', function() {
+                    this.innerHTML = '<i class="fas fa-search-dollar me-2"></i>Calculate Price';
+                });
+                
+                predictBtn.addEventListener('mouseout', function() {
+                    this.innerHTML = '<i class="fas fa-calculator me-2"></i>Predict House Price';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
